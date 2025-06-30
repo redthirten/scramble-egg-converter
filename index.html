@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Scramble - A game panel Egg converter</title>
+</head>
+<body>
+  <h1>Scramble - A game panel Egg converter</h1>
+
+  <div>
+    <label>
+      <input type="radio" name="conversion" value="Pelican">
+      Convert to Pelican
+    </label>
+    <label>
+      <input type="radio" name="conversion" value="Pterodactyl">
+      Convert to Pterodactyl
+    </label>
+  </div>
+  
+  <div id="uuid-container" style="display: none; margin-top: 0.5em;">
+    <label for="uuid-input">Optional UUID:</label>
+    <input type="text" id="uuid-input" placeholder="Leave blank to auto-generate" style="width: 350px;" />
+  </div>
+  <br>
+  <input type="file" id="upload" accept=".json" disabled />
+  <br><br>
+  <div>
+    <button id="download" disabled>Download Transformed JSON</button>
+  </div>
+
+  <script src="pelican.js"></script>
+  <script src="pterodactyl.js"></script>
+  <script src="script.js"></script>
+
+</body>
+</html>
