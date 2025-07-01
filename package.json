@@ -99,8 +99,8 @@
   },
   "scripts": {
     "start": "npm run build && npm run preview",
-    "build": "tailwindcss -i ./src/tailwind.css -o ./src/styles.css --minify",
-    "preview": "live-server src"
+    "build": "tailwindcss -i ./tailwind.css -o ./styles.css --minify",
+    "preview": "live-server ."
   },
   "keywords": [],
   "author": "",
