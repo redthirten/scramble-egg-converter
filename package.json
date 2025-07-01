@@ -3,7 +3,7 @@
     "tailwindcss": "^3.4.17"
   },
   "name": "scramble-egg-converter",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Scramble is an Egg converter for the Pelican and Pterodactyl game server panels.",
   "main": "tailwind.config.js",
   "dependencies": {

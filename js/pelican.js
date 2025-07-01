@@ -22,9 +22,14 @@ export function convertToPelican(pteroJson, providedUUID, providedUpdateURL) {
     });
   }
 
-  // Replace "build.env" with "environment" in config.files string (reverse conversion)
+  /*
+  Config Files:
+    - "server.build.env" -> "server.environment"
+    - "server.build.default" -> "server.allocations.default"
+  */
   if (pelican.config && typeof pelican.config.files === 'string') {
-    pelican.config.files = pelican.config.files.replace(/build\.env/g, 'environment');
+    pelican.config.files = pelican.config.files.replace(/server\.build\.env/g, 'server.environment');
+    pelican.config.files = pelican.config.files.replace(/server\.build\.default/g, 'server.allocations.default');
   }
 
   // Enforce key ordering to match spec (author, uuid, then rest)

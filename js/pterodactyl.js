@@ -20,9 +20,14 @@ export function convertToPterodactyl(pelicanJson) {
     });
   }
 
-  // Replace "environment" with "build.env" in config.files string
+  /*
+  Config Files:
+    - "server.environment" -> "server.build.env"
+    - "server.allocations.default" -> "server.build.default"
+  */
   if (ptero.config && typeof ptero.config.files === 'string') {
-    ptero.config.files = ptero.config.files.replace(/environment/g, 'build.env');
+    ptero.config.files = ptero.config.files.replace(/server\.environment/g, 'server.build.env');
+    ptero.config.files = ptero.config.files.replace(/server\.allocations\.default/g, 'server.build.default');
   }
 
   return ptero;
