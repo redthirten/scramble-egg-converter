@@ -16,7 +16,7 @@ document.querySelectorAll('input[name="conversion"]').forEach(radio => {
     const value = radio.value;
     conversionTarget = value;
 
-    // Show UUID field if Pelican is selected
+    // Show metadata container if Pelican is selected
     metadataContainer.classList.toggle('hidden', value !== 'Pelican');
 
     // Enable file upload
