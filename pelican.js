@@ -1,4 +1,4 @@
-function convertToPelican(pteroJson, providedUUID) {
+function convertToPelican(pteroJson, providedUUID, providedUpdateURL) {
   const pelican = structuredClone(pteroJson);
 
   // Set standard Pelican comment
@@ -6,9 +6,10 @@ function convertToPelican(pteroJson, providedUUID) {
 
   // Update version
   pelican.meta.version = "PLCN_v1";
+  pelican.meta.update_url = providedUpdateURL ?? null;
 
   // Generate UUID
-  const uuid = providedUUID || generateUUID();
+  const uuid = providedUUID || crypto.randomUUID();
 
   // Convert variable rules to array and add sort
   if (Array.isArray(pelican.variables)) {
@@ -40,19 +41,9 @@ function convertToPelican(pteroJson, providedUUID) {
   // Copy rest of keys (preserving original order)
   for (const key of Object.keys(pelican)) {
     if (!ordered.hasOwnProperty(key)) {
-      if (key !== 'uuid' && key !== '_comment') {
-        ordered[key] = pelican[key];
-      }
+      ordered[key] = pelican[key];
     }
   }
 
   return ordered;
-}
-
-// RFC4122 v4-compliant UUID generator
-function generateUUID() {
-  return ([1e7]+-1e3+-4e3+-8e3+-1e11)
-    .replace(/[018]/g, c =>
-      (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-    );
 }

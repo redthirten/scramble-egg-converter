@@ -1,38 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍳</text></svg>">
   <title>Scramble - A game panel Egg converter</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Discord Embed Meta -->
+  <meta content="Scramble" property="og:title" />
+  <meta content="A game panel Egg converter" property="og:description" />
+  <meta content="https://redthirten.github.io/scramble-egg-converter/" property="og:url" />
+  <meta content="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍳</text></svg>" property="og:image" />
+  <meta content="#ffb900" data-react-helmet="true" name="theme-color" />
 </head>
-<body>
-  <h1>Scramble - A game panel Egg converter</h1>
 
-  <div>
-    <label>
-      <input type="radio" name="conversion" value="Pelican">
-      Convert to Pelican
-    </label>
-    <label>
-      <input type="radio" name="conversion" value="Pterodactyl">
-      Convert to Pterodactyl
-    </label>
-  </div>
-  
-  <div id="uuid-container" style="display: none; margin-top: 0.5em;">
-    <label for="uuid-input">Optional UUID:</label>
-    <input type="text" id="uuid-input" placeholder="Leave blank to auto-generate" style="width: 350px;" />
-  </div>
-  <br>
-  <input type="file" id="upload" accept=".json" disabled />
-  <br><br>
-  <div>
-    <button id="download" disabled>Download Transformed JSON</button>
+<style>
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(-8px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.5s ease-out;
+  }
+</style>
+
+<body class="bg-gray-100 min-h-screen flex items-center justify-center px-4">
+  <div class="bg-white p-8 rounded-xl shadow-xl w-full max-w-3xl">
+
+    <div class="text-center mb-8 animate-fade-in">
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-yellow-500 flex justify-center items-center gap-3">
+        🍳 Scramble
+      </h1>
+      <p class="text-lg sm:text-xl font-medium text-gray-700 mt-2">
+        A game panel Egg converter
+      </p>
+    </div>
+
+    <div class="mb-4 flex gap-6 justify-center">
+      <label class="inline-flex items-center gap-2">
+        <input type="radio" name="conversion" value="Pelican" class="accent-blue-600">
+        <span>Convert to <strong>Pelican</strong></span>
+        <img src="https://pelican.dev/img/logo.png" alt="Pelican" class="w-5 h-5">
+      </label>
+      <label class="inline-flex items-center gap-2">
+        <input type="radio" name="conversion" value="Pterodactyl" class="accent-blue-600">
+        <span>Convert to <strong>Pterodactyl</strong></span>
+        <img src="https://pterodactyl.io/favicons/favicon.ico" alt="Pterodactyl" class="w-5 h-5">
+      </label>
+    </div>
+
+
+
+    <div id="add-metadata" class="mb-6 hidden">
+      <div class="bg-gray-50 border border-gray-300 rounded-lg p-4 shadow-sm">
+        <p class="text-sm font-semibold text-gray-800 mb-4">Add Metadata (Optional)</p>
+
+        <div class="mb-4">
+          <label for="uuid-input" class="block text-sm text-gray-700 mb-1">UUID:</label>
+          <input type="text" id="uuid-input" placeholder="Leave blank to auto-generate"
+            class="w-full border border-gray-300 px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200" />
+        </div>
+
+        <div>
+          <label for="update-url-input" class="block text-sm text-gray-700 mb-1">Update URL:</label>
+          <input type="text" id="update-url-input"
+            class="w-full border border-gray-300 px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-200"
+            placeholder="Leave blank for none" />
+          <p class="text-xs text-gray-500 mt-1">
+            Example:
+          </p>
+          <p class="text-xs font-mono text-gray-500 mt-1 ml-4">
+            https://raw.githubusercontent.com/pelican-eggs/games-steamcmd/refs/heads/main/game-name/egg-game-name.json
+          </p>
+
+
+        </div>
+      </div>
+    </div>
+
+
+    <div class="mb-4">
+      <input type="file" id="upload" accept=".json"
+        class="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-blue-600 file:text-white hover:file:bg-blue-700 disabled:opacity-50"
+        disabled />
+    </div>
+
+    <div class="text-center">
+      <button id="download"
+        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded disabled:opacity-50" disabled>
+        Convert and Download
+      </button>
+    </div>
+
+    <footer class="mt-5 text-center text-sm text-gray-500">
+      <div class="border-t pt-4">
+        <p class="mb-2">
+          Made with 💛 for the community. Files are processed in-browser and not uploaded.
+        </p>
+        <div class="flex justify-center gap-4">
+          <a href="https://pelican.dev/" class="hover:underline hover:text-gray-700" target="_blank"
+            rel="noopener noreferrer">Pelican</a>
+          <a href="https://pterodactyl.io/" class="hover:underline hover:text-gray-700" target="_blank"
+            rel="noopener noreferrer">Pterodactyl</a>
+          <a href="https://pterodactyl.io/community/config/eggs/creating_a_custom_egg.html" class="hover:underline hover:text-gray-700" target="_blank"
+            rel="noopener noreferrer">Egg Docs</a>
+          <a href="https://github.com/redthirten/scramble-egg-converter" class="hover:underline hover:text-gray-700"
+            target="_blank" rel="noopener noreferrer">GitHub</a>
+        </div>
+        <p class="mt-2 text-xs">
+          &copy;2025 David Wolfe (Red-Thirten). Licensed under
+          <a href="https://www.gnu.org/licenses/agpl-3.0.html" target="_blank" rel="noopener noreferrer"
+            class="underline hover:text-gray-700">
+            GNU AGPL v3.0
+          </a>.
+        </p>
+      </div>
+    </footer>
+
   </div>
 
-  <script src="pelican.js"></script>
-  <script src="pterodactyl.js"></script>
-  <script src="script.js"></script>
-
+  <script src="./pelican.js"></script>
+  <script src="./pterodactyl.js"></script>
+  <script src="./script.js"></script>
 </body>
+
 </html>
