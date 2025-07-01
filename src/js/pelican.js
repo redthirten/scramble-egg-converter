@@ -1,4 +1,4 @@
-function convertToPelican(pteroJson, providedUUID, providedUpdateURL) {
+export function convertToPelican(pteroJson, providedUUID, providedUpdateURL) {
   const pelican = structuredClone(pteroJson);
 
   // Set standard Pelican comment

@@ -1,3 +1,6 @@
+import { convertToPelican } from './pelican.js';
+import { convertToPterodactyl } from './pterodactyl.js';
+
 const metadataContainer = document.getElementById('add-metadata');
 const uuidInput = document.getElementById('uuid-input');
 const updateUrlInput = document.getElementById('update-url-input');

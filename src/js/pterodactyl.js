@@ -1,4 +1,4 @@
-function convertToPterodactyl(pelicanJson) {
+export function convertToPterodactyl(pelicanJson) {
   const ptero = structuredClone(pelicanJson);
 
   // Set standard Pterodactyl comment

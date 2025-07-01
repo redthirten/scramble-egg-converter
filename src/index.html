@@ -7,12 +7,15 @@
   <link rel="icon"
     href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍳</text></svg>">
   <title>Scramble - A game panel Egg converter</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+  <link href="./styles.css" rel="stylesheet">
   <!-- Discord Embed Meta -->
   <meta content="Scramble" property="og:title" />
   <meta content="A game panel Egg converter" property="og:description" />
   <meta content="https://redthirten.github.io/scramble-egg-converter/" property="og:url" />
-  <meta content="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍳</text></svg>" property="og:image" />
+  <meta
+    content="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍳</text></svg>"
+    property="og:image" />
   <meta content="#ffb900" data-react-helmet="true" name="theme-color" />
 </head>
 
@@ -112,8 +115,8 @@
             rel="noopener noreferrer">Pelican</a>
           <a href="https://pterodactyl.io/" class="hover:underline hover:text-gray-700" target="_blank"
             rel="noopener noreferrer">Pterodactyl</a>
-          <a href="https://pterodactyl.io/community/config/eggs/creating_a_custom_egg.html" class="hover:underline hover:text-gray-700" target="_blank"
-            rel="noopener noreferrer">Egg Docs</a>
+          <a href="https://pterodactyl.io/community/config/eggs/creating_a_custom_egg.html"
+            class="hover:underline hover:text-gray-700" target="_blank" rel="noopener noreferrer">Egg Docs</a>
           <a href="https://github.com/redthirten/scramble-egg-converter" class="hover:underline hover:text-gray-700"
             target="_blank" rel="noopener noreferrer">GitHub</a>
         </div>
@@ -129,9 +132,7 @@
 
   </div>
 
-  <script src="./pelican.js"></script>
-  <script src="./pterodactyl.js"></script>
-  <script src="./script.js"></script>
+  <script type="module" src="./js/main.js"></script>
 </body>
 
 </html>
