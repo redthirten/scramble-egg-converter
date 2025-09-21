@@ -8,6 +8,7 @@ export function convertToPterodactyl(pelicanJson) {
   ptero.meta.version = "PTDL_v2";
   ptero.meta.update_url = null;
   delete ptero.uuid;
+  delete ptero.tags;
 
   // Convert variables
   if (Array.isArray(ptero.variables)) {
@@ -28,6 +29,10 @@ export function convertToPterodactyl(pelicanJson) {
   if (ptero.config && typeof ptero.config.files === 'string') {
     ptero.config.files = ptero.config.files.replace(/server\.environment/g, 'server.build.env');
     ptero.config.files = ptero.config.files.replace(/server\.allocations\.default/g, 'server.build.default');
+  }
+
+  if (Array.isArray(ptero.features) && !ptero.features.length) {
+    ptero.features = null;
   }
 
   return ptero;
