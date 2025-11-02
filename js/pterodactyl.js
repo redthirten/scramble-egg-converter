@@ -7,10 +7,20 @@ export function convertToPterodactyl(pelicanJson) {
   // Modify metadata
   ptero.meta.version = "PTDL_v2";
   ptero.meta.update_url = null;
+
   delete ptero.uuid;
   delete ptero.tags;
 
-  // Convert variables
+  // Convert startup_commands object to string (first key only)
+  if (ptero.startup_commands && typeof ptero.startup_commands === "object") {
+    const firstKey = Object.keys(ptero.startup_commands)[0];
+    if (firstKey) {
+      ptero.startup = ptero.startup_commands[firstKey];
+    }
+    delete ptero.startup_commands;
+  }
+
+  // Convert variable rules array to string and remove sort
   if (Array.isArray(ptero.variables)) {
     ptero.variables = ptero.variables.map(v => {
       const newVar = { ...v };
@@ -31,9 +41,34 @@ export function convertToPterodactyl(pelicanJson) {
     ptero.config.files = ptero.config.files.replace(/server\.allocations\.default/g, 'server.build.default');
   }
 
+  // Remove empty feature arrays
   if (Array.isArray(ptero.features) && !ptero.features.length) {
     ptero.features = null;
   }
 
-  return ptero;
+  // === Enforce key order for Pterodactyl ===
+  const ordered = {};
+  ordered._comment = ptero._comment;
+  ordered.meta = ptero.meta;
+  ordered.exported_at = ptero.exported_at;
+  ordered.name = ptero.name;
+  ordered.author = ptero.author;
+  ordered.description = ptero.description;
+  ordered.features = ptero.features;
+  ordered.docker_images = ptero.docker_images;
+  ordered.file_denylist = ptero.file_denylist;
+
+  // Ensure startup comes *right after* file_denylist
+  if (ptero.startup) {
+    ordered.startup = ptero.startup;
+  }
+
+  // Append remaining keys
+  for (const key of Object.keys(ptero)) {
+    if (!ordered.hasOwnProperty(key)) {
+      ordered[key] = ptero[key];
+    }
+  }
+
+  return ordered;
 }
