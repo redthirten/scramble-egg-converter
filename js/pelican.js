@@ -5,11 +5,17 @@ export function convertToPelican(pteroJson, providedUUID, providedUpdateURL) {
   pelican._comment = "DO NOT EDIT: FILE GENERATED AUTOMATICALLY BY PANEL";
 
   // Update version
-  pelican.meta.version = "PLCN_v1";
+  pelican.meta.version = "PLCN_v3";
   pelican.meta.update_url = providedUpdateURL ?? null;
 
   // Generate UUID
   const uuid = providedUUID || crypto.randomUUID();
+
+  // Convert startup string to object
+  if (typeof pelican.startup === "string") {
+    pelican.startup_commands = { Default: pelican.startup };
+    delete pelican.startup;
+  }
 
   // Convert variable rules to array and add sort
   if (Array.isArray(pelican.variables)) {
@@ -32,18 +38,26 @@ export function convertToPelican(pteroJson, providedUUID, providedUpdateURL) {
     pelican.config.files = pelican.config.files.replace(/server\.build\.default/g, 'server.allocations.default');
   }
 
-  // Enforce key ordering to match spec (author, uuid, then rest)
+  // === Enforce key order for Pelican ===
   const ordered = {};
-
-  // Manually copy fields in order
   ordered._comment = pelican._comment;
   ordered.meta = pelican.meta;
   ordered.exported_at = pelican.exported_at;
   ordered.name = pelican.name;
   ordered.author = pelican.author;
   ordered.uuid = uuid;
+  ordered.description = pelican.description;
+  ordered.tags = pelican.tags ?? [];
+  ordered.features = pelican.features;
+  ordered.docker_images = pelican.docker_images;
+  ordered.file_denylist = pelican.file_denylist;
 
-  // Copy rest of keys (preserving original order)
+  // Ensure startup_commands comes *right after* file_denylist
+  if (pelican.startup_commands) {
+    ordered.startup_commands = pelican.startup_commands;
+  }
+
+  // Append remaining keys
   for (const key of Object.keys(pelican)) {
     if (!ordered.hasOwnProperty(key)) {
       ordered[key] = pelican[key];
