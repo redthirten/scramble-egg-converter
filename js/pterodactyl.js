@@ -10,6 +10,7 @@ export function convertToPterodactyl(pelicanJson) {
 
   delete ptero.uuid;
   delete ptero.tags;
+  delete ptero.image;
 
   // Convert startup_commands object to string (first key only)
   if (ptero.startup_commands && typeof ptero.startup_commands === "object") {
