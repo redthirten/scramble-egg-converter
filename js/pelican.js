@@ -7,6 +7,7 @@ export function convertToPelican(pteroJson, providedUUID, providedUpdateURL) {
   // Update version
   pelican.meta.version = "PLCN_v3";
   pelican.meta.update_url = providedUpdateURL ?? null;
+  pelican.image = null;
 
   // Generate UUID
   const uuid = providedUUID || crypto.randomUUID();
@@ -47,6 +48,7 @@ export function convertToPelican(pteroJson, providedUUID, providedUpdateURL) {
   ordered.author = pelican.author;
   ordered.uuid = uuid;
   ordered.description = pelican.description;
+  ordered.image = pelican.image; 
   ordered.tags = pelican.tags ?? [];
   ordered.features = pelican.features;
   ordered.docker_images = pelican.docker_images;
