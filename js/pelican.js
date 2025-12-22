@@ -1,15 +1,16 @@
-export function convertToPelican(pteroJson, providedUUID, providedUpdateURL) {
+export function convertToPelican(pteroJson, providedUUID, providedUpdateURL, providedImageBase64) {
   const pelican = structuredClone(pteroJson);
 
   // Set standard Pelican comment
   pelican._comment = "DO NOT EDIT: FILE GENERATED AUTOMATICALLY BY PANEL";
 
-  // Update version
+  // Modify metadata
   pelican.meta.version = "PLCN_v3";
-  pelican.meta.update_url = providedUpdateURL ?? null;
+  pelican.meta.update_url = providedUpdateURL || null;
+  pelican.image = providedImageBase64 || null;
 
-  // Generate UUID
-  const uuid = providedUUID || crypto.randomUUID();
+  // Generate UUID if not provided
+  pelican.uuid = providedUUID || crypto.randomUUID();
 
   // Convert startup string to object
   if (typeof pelican.startup === "string") {
@@ -45,8 +46,9 @@ export function convertToPelican(pteroJson, providedUUID, providedUpdateURL) {
   ordered.exported_at = pelican.exported_at;
   ordered.name = pelican.name;
   ordered.author = pelican.author;
-  ordered.uuid = uuid;
+  ordered.uuid = pelican.uuid;
   ordered.description = pelican.description;
+  ordered.image = pelican.image; 
   ordered.tags = pelican.tags ?? [];
   ordered.features = pelican.features;
   ordered.docker_images = pelican.docker_images;
