@@ -4,6 +4,7 @@ import { convertToPterodactyl } from './pterodactyl.js';
 const metadataContainer = document.getElementById('add-metadata');
 const uuidInput = document.getElementById('uuid-input');
 const updateUrlInput = document.getElementById('update-url-input');
+const imageBase64Input = document.getElementById('image-base64-input');
 const uploadInput = document.getElementById('upload');
 const downloadButton = document.getElementById('download');
 
@@ -60,7 +61,13 @@ document.getElementById('download').addEventListener('click', () => {
     }
     const userUUID = uuidInput.value.trim();
     const userUpdateURL = updateUrlInput.value.trim();
-    transformed = convertToPelican(originalJson, userUUID || undefined, userUpdateURL || null);
+    const userImageBase64 = imageBase64Input.value.trim();
+    transformed = convertToPelican(
+      originalJson,
+      userUUID,
+      userUpdateURL,
+      userImageBase64
+    );
   } else {
     if (originalJson.meta?.version?.includes("PTDL")) {
       alert("This file already appears to be a Pterodactyl Egg.");
