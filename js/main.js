@@ -119,7 +119,7 @@ document.getElementById('download').addEventListener('click', () => {
       return;
     }
     const userUUID = uuidInput.value.trim();
-    const userUpdateURL = updateUrlInput.value.trim();
+    const userUpdateURL = updateUrlInput.value.trim().replace(/\\\//g, '/'); // Extra sanitization for a JSON encoded URL string which may be inputted
     const userImageBase64 = imageBase64Input.value.trim();
     transformed = convertToPelican(
       originalObj,
