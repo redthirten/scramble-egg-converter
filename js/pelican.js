@@ -1,5 +1,5 @@
-export function convertToPelican(pteroJson, providedUUID, providedUpdateURL, providedImageBase64) {
-  const pelican = structuredClone(pteroJson);
+export function convertToPelican(pteroObj, providedUUID, providedUpdateURL, providedImageBase64) {
+  const pelican = structuredClone(pteroObj);
 
   // Set standard Pelican comment
   pelican._comment = "DO NOT EDIT: FILE GENERATED AUTOMATICALLY BY PANEL";
@@ -38,6 +38,11 @@ export function convertToPelican(pteroJson, providedUUID, providedUpdateURL, pro
     pelican.config.files = pelican.config.files.replace(/server\.build\.env/g, 'server.environment');
     pelican.config.files = pelican.config.files.replace(/server\.build\.default/g, 'server.allocations.default');
   }
+
+  // Parse JSON Config values
+  pelican.config.files = JSON.parse(pelican.config.files);
+  pelican.config.startup = JSON.parse(pelican.config.startup);
+  pelican.config.logs = JSON.parse(pelican.config.logs);
 
   // === Enforce key order for Pelican ===
   const ordered = {};

@@ -8,8 +8,9 @@ const imageBase64Input = document.getElementById('image-base64-input');
 const uploadInput = document.getElementById('upload');
 const downloadButton = document.getElementById('download');
 
+let originalFileExt = '';
 let originalFileName = '';
-let originalJsonText = '';
+let originalText = '';
 let conversionTarget = '';
 
 document.querySelectorAll('input[name="conversion"]').forEach(radio => {
@@ -29,33 +30,48 @@ uploadInput.addEventListener('change', async (event) => {
   const file = event.target.files[0];
   if (!file) return;
 
-  originalFileName = file.name.replace(/\.json$/i, '');
-  originalJsonText = await file.text();
+  // Store base name (without extension) and the raw content
+  const parts = file.name.split('.');
+  if (parts.length > 1) {
+    originalFileExt = parts[parts.length - 1].toLowerCase();
+    parts.pop();
+  } else {
+    originalFileExt = '';
+  }
+  originalFileName = parts.join('.');
+  originalText = await file.text();
   downloadButton.disabled = false;
 });
 
 document.getElementById('download').addEventListener('click', () => {
-  if (!originalJsonText || !conversionTarget) {
+  if (!originalText || !conversionTarget) {
     alert("Please select a file and conversion type.");
     return;
   }
 
-  let originalJson;
+  let originalObj;
   try {
-    originalJson = JSON.parse(originalJsonText);
-    // Lazy check to see if JSON appears to be formatted like an Egg
-    if (!('exported_at' in originalJson) || !('name' in originalJson) || !('author' in originalJson)) {
+    if (originalFileExt === 'yml' || originalFileExt === 'yaml') {
+      originalObj = jsyaml.load(originalText);
+    } else {
+      originalObj = JSON.parse(originalText);
+    }
+
+    // Lazy check to see if JSON/YAML appears to be formatted like an Egg
+    if (!originalObj || !('exported_at' in originalObj) || !('name' in originalObj) || !('author' in originalObj)) {
       alert("This file does not appear to be a valid Egg file.");
       return;
     }
   } catch (e) {
-    alert("Invalid JSON file.");
+    alert("Invalid file format.");
     return;
   }
 
   let transformed;
+  let outData = '';
+  let outExt = 'json';
   if (conversionTarget === 'Pelican') {
-    if (originalJson.meta?.version?.includes("PLCN")) {
+    if (originalObj.meta?.version?.includes("PLCN")) {
       alert("This file already appears to be a Pelican Egg.");
       return;
     }
@@ -63,20 +79,22 @@ document.getElementById('download').addEventListener('click', () => {
     const userUpdateURL = updateUrlInput.value.trim();
     const userImageBase64 = imageBase64Input.value.trim();
     transformed = convertToPelican(
-      originalJson,
+      originalObj,
       userUUID,
       userUpdateURL,
       userImageBase64
     );
+    outData = jsyaml.dump(transformed, { noRefs: true, lineWidth: -1 });
+    outExt = 'yaml';
   } else {
-    if (originalJson.meta?.version?.includes("PTDL")) {
+    if (originalObj.meta?.version?.includes("PTDL")) {
       alert("This file already appears to be a Pterodactyl Egg.");
       return;
     }
-    transformed = convertToPterodactyl(originalJson);
+    transformed = convertToPterodactyl(originalObj);
+    outData = JSON.stringify(transformed, null, 4).replace(/\//g, '\\/');
+    outExt = 'json';
   }
-
-  const transformedData = JSON.stringify(transformed, null, 4).replace(/\//g, '\\/');
 
   // Clean the original name: lowercase, remove format indicators
   let cleanName = originalFileName.toLowerCase()
@@ -86,9 +104,9 @@ document.getElementById('download').addEventListener('click', () => {
     .replace(/[^a-z0-9\-]/g, '-') // replace invalid chars with dashes
     .replace(/^-+|-+$/g, ''); // trim dashes at start/end
 
-  const fileName = `${conversionTarget.toLowerCase()}-${cleanName || 'converted'}.json`;
+  const fileName = `${conversionTarget.toLowerCase()}-${cleanName || 'converted'}.${outExt}`;
 
-  const blob = new Blob([transformedData], { type: 'application/json' });
+  const blob = new Blob([outData], { type: outExt === 'yaml' ? 'text/yaml' : 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
