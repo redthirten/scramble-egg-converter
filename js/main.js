@@ -39,7 +39,16 @@ document.querySelectorAll('input[name="conversion"]').forEach(radio => {
     // Show metadata container if Pelican is selected
     metadataContainer.classList.toggle('hidden', value !== 'Pelican');
 
-    // Enable file upload
+    // Restrict accepted file types based on conversion target
+    if (value === 'Pelican') {
+      uploadInput.accept = '.json';
+    } else {
+      uploadInput.accept = '.yaml,.yml';
+    }
+
+    // Reset any previously selected file and enable upload
+    uploadInput.value = '';
+    downloadButton.disabled = true;
     uploadInput.disabled = false;
   });
 });
@@ -48,7 +57,7 @@ uploadInput.addEventListener('change', async (event) => {
   const file = event.target.files[0];
   if (!file) return;
 
-  // Store base name (without extension) and the raw content
+  // Parse filename into extension & base name variables
   const parts = file.name.split('.');
   if (parts.length > 1) {
     originalFileExt = parts[parts.length - 1].toLowerCase();
@@ -57,6 +66,22 @@ uploadInput.addEventListener('change', async (event) => {
     originalFileExt = '';
   }
   originalFileName = parts.join('.');
+
+  // Validate source file format is suitable for the chosen conversion target
+  if (conversionTarget === 'Pelican' && originalFileExt !== 'json') {
+    alert('Please upload a JSON file when converting to Pelican.');
+    uploadInput.value = '';
+    downloadButton.disabled = true;
+    return;
+  }
+  else if (conversionTarget === 'Pterodactyl' && !(originalFileExt === 'yaml' || originalFileExt === 'yml')) {
+    alert('Please upload a YAML file when converting to Pterodactyl.');
+    uploadInput.value = '';
+    downloadButton.disabled = true;
+    return;
+  }
+  
+  // Store file text and enable download button
   originalText = await file.text();
   downloadButton.disabled = false;
 });
