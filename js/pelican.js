@@ -1,3 +1,20 @@
+/**
+ * Converts a Pterodactyl-style Egg into a Pelican-style Egg.
+ *
+ * Converts keys, normalizes startup/variables/config formats, and enforces
+ * Pelican key ordering expected by format guidelines. The function performs
+ * in-memory transformations and returns a new object; it does not mutate
+ * the input.
+ *
+ * @author David Wolfe <red_thirten@yahoo.com>
+ * @license AGPL-3.0-only
+ * 
+ * @param {Object} pteroObj - Source Pterodactyl Egg in object form
+ * @param {string} [providedUUID] - Optional UUID to set on the Pelican egg
+ * @param {string} [providedUpdateURL] - Optional update URL to include in meta
+ * @param {string} [providedImageBase64] - Optional base64 image string
+ * @returns {Object} Pelican-formatted Egg in object form
+ */
 export function convertToPelican(pteroObj, providedUUID, providedUpdateURL, providedImageBase64) {
   const pelican = structuredClone(pteroObj);
 
