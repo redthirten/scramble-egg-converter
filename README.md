@@ -1,4 +1,4 @@
-# Scramble - A game panel Egg converter
+# 🍳 Scramble - A game panel Egg converter
 
 **Scramble is an Egg converter website for the Pelican and Pterodactyl game server panels.**
 
