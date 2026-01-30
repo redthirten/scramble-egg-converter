@@ -19,18 +19,25 @@
 import { convertToPelican } from './pelican.js';
 import { convertToPterodactyl } from './pterodactyl.js';
 
+// Main elements
+const uploadInput = document.getElementById('upload');
+const downloadButton = document.getElementById('download');
+
+// Metadata elements (Pelican only)
 const metadataContainer = document.getElementById('add-metadata');
 const uuidInput = document.getElementById('uuid-input');
 const updateUrlInput = document.getElementById('update-url-input');
 const imageBase64Input = document.getElementById('image-base64-input');
-const uploadInput = document.getElementById('upload');
-const downloadButton = document.getElementById('download');
+const tagsInput = document.getElementById('tags-input');
+const tagsList = document.getElementById('tags-list');
+let tags = [];
 
 let originalFileExt = '';
 let originalFileName = '';
 let originalText = '';
 let conversionTarget = '';
 
+/** Conversion radio buttons change */
 document.querySelectorAll('input[name="conversion"]').forEach(radio => {
   radio.addEventListener('change', () => {
     const value = radio.value;
@@ -53,8 +60,9 @@ document.querySelectorAll('input[name="conversion"]').forEach(radio => {
   });
 });
 
-uploadInput.addEventListener('change', async (event) => {
-  const file = event.target.files[0];
+/** Upload file is chosen */
+uploadInput.addEventListener('change', async (e) => {
+  const file = e.target.files[0]; // Only get first file if multiple files selected
   if (!file) return;
 
   // Parse filename into extension & base name variables
@@ -86,6 +94,50 @@ uploadInput.addEventListener('change', async (event) => {
   downloadButton.disabled = false;
 });
 
+/** Tags Field */
+if (tagsInput && tagsList) {
+  // Input behavior: press Enter to add tag; ignore empty/duplicate
+  tagsInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const value = tagsInput.value.trim();
+      if (!value) return;
+      if (!tags.includes(value)) {
+        tags.push(value);
+        renderTags();
+      }
+      tagsInput.value = '';
+    }
+  });
+
+  // Delete tag: click X on specific tag to remove it
+  tagsList.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-index]');
+    if (!btn) return;
+    const idx = Number(btn.getAttribute('data-index'));
+    if (Number.isFinite(idx)) {
+      tags.splice(idx, 1);
+      renderTags();
+    }
+  });
+
+  // Tag rendering
+  function renderTags() {
+    tagsList.innerHTML = tags.map((t, i) =>
+      `<span class="inline-flex items-center bg-gray-200 text-gray-800 rounded-full px-3 py-1 text-sm ring-1 ring-gray-400">
+         <span class="mr-2">${escapeHtml(t)}</span>
+         <button type="button" data-index="${i}" class="text-gray-500 hover:text-gray-800">&times;</button>
+       </span>`
+    ).join('');
+  }
+
+  // Sanitize inputs before rendering
+  function escapeHtml(s) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+}
+
+/** Download button click */
 document.getElementById('download').addEventListener('click', () => {
   if (!originalText || !conversionTarget) {
     alert("Please select a file and conversion type.");
@@ -118,14 +170,15 @@ document.getElementById('download').addEventListener('click', () => {
       alert("This file already appears to be a Pelican Egg.");
       return;
     }
-    const userUUID = uuidInput.value.trim();
-    const userUpdateURL = updateUrlInput.value.trim().replace(/\\\//g, '/'); // Extra sanitization for a JSON encoded URL string which may be inputted
-    const userImageBase64 = imageBase64Input.value.trim();
+    const uuid = uuidInput.value.trim();
+    const updateUrl = updateUrlInput.value.trim().replace(/\\\//g, '/'); // Extra sanitization for a JSON encoded URL string which may be inputted
+    const imageBase64 = imageBase64Input.value.trim();
     transformed = convertToPelican(
       originalObj,
-      userUUID,
-      userUpdateURL,
-      userImageBase64
+      uuid,
+      updateUrl,
+      imageBase64,
+      tags
     );
     outData = jsyaml.dump(transformed, { noRefs: true, lineWidth: -1 });
     outExt = 'yaml';

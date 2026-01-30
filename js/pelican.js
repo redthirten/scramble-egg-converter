@@ -10,21 +10,24 @@
  * @license AGPL-3.0-only
  * 
  * @param {Object} pteroObj - Source Pterodactyl Egg in object form
- * @param {string} [providedUUID] - Optional UUID to set on the Pelican egg
+ * @param {string} [providedUUID] - Optional UUID to set on the Pelican Egg
  * @param {string} [providedUpdateURL] - Optional update URL to include in meta
- * @param {string} [providedImageBase64] - Optional base64 image string
+ * @param {string} [providedImageBase64] - Optional Base64 image string
+ * @param {string[]} [providedTags] - Optional array of tags
  * @returns {Object} Pelican-formatted Egg in object form
  */
-export function convertToPelican(pteroObj, providedUUID, providedUpdateURL, providedImageBase64) {
+export function convertToPelican(pteroObj, providedUUID, providedUpdateURL, providedImageBase64, providedTags) {
   const pelican = structuredClone(pteroObj);
 
   // Set standard Pelican comment
   pelican._comment = "DO NOT EDIT: FILE GENERATED AUTOMATICALLY BY PANEL";
 
   // Modify metadata
+  pelican.meta = pelican.meta || {};
   pelican.meta.version = "PLCN_v3";
   pelican.meta.update_url = providedUpdateURL || null;
   pelican.image = providedImageBase64 || null;
+  pelican.tags = providedTags || [];
 
   // Generate UUID if not provided
   pelican.uuid = providedUUID || crypto.randomUUID();
@@ -70,8 +73,8 @@ export function convertToPelican(pteroObj, providedUUID, providedUpdateURL, prov
   ordered.author = pelican.author;
   ordered.uuid = pelican.uuid;
   ordered.description = pelican.description;
-  ordered.image = pelican.image; 
-  ordered.tags = pelican.tags ?? [];
+  ordered.image = pelican.image;
+  ordered.tags = pelican.tags;
   ordered.features = pelican.features;
   ordered.docker_images = pelican.docker_images;
   ordered.file_denylist = pelican.file_denylist;
