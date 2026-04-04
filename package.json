@@ -1,6 +1,6 @@
 {
   "name": "scramble-egg-converter",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "description": "Scramble is an Egg converter for the Pelican and Pterodactyl game server panels.",
   "author": "David Wolfe (Red-Thirten)",
   "contributors": [
@@ -14,7 +14,8 @@
   },
   "main": "tailwind.config.js",
   "scripts": {
-    "build": "npx @tailwindcss/cli -i ./tailwind.css -o ./styles.css --minify"
+    "build": "npx @tailwindcss/cli -i ./tailwind.css -o ./styles.css --minify",
+    "_comment": "For HTML preview, just use VS Code's Live Preview plugin (safest), or you can install/use `live-server` NPM package."
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.1.13",

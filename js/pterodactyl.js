@@ -1,5 +1,19 @@
-export function convertToPterodactyl(pelicanJson) {
-  const ptero = structuredClone(pelicanJson);
+/**
+ * Converts a Pelican-style Egg into a Pterodactyl-style Egg.
+ *
+ * Converts keys, normalizes startup/variables/config formats, and enforces
+ * Pterodactyl key ordering expected by format guidelines. The function performs
+ * in-memory transformations and returns a new object; it does not mutate
+ * the input.
+ *
+ * @author David Wolfe <red_thirten@yahoo.com>
+ * @license AGPL-3.0-only
+ *
+ * @param {Object} pelicanObj - Source Pelican Egg in object form
+ * @returns {Object} Pterodactyl-formatted Egg in object form
+ */
+export function convertToPterodactyl(pelicanObj) {
+  const ptero = structuredClone(pelicanObj);
 
   // Set standard Pterodactyl comment
   ptero._comment = "DO NOT EDIT: FILE GENERATED AUTOMATICALLY BY PTERODACTYL PANEL - PTERODACTYL.IO";
@@ -31,6 +45,11 @@ export function convertToPterodactyl(pelicanJson) {
       return newVar;
     });
   }
+
+  // Stringify JSON Config values
+  ptero.config.files = JSON.stringify(ptero.config.files, null, 4).replace(/\//g, '\\/');
+  ptero.config.startup = JSON.stringify(ptero.config.startup, null, 4).replace(/\//g, '\\/');
+  ptero.config.logs = JSON.stringify(ptero.config.logs, null, 4).replace(/\//g, '\\/');
 
   /*
   Config Files:
