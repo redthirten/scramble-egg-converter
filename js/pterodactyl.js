@@ -43,10 +43,18 @@ export function convertToPterodactyl(pelicanObj) {
       .slice()
       // sort ascending by Pelican's `sort` property
       .sort((a, b) => a.sort - b.sort)
-      // map to Pterodactyl variable format and remove `sort`
+      // map to Pterodactyl variable format
       .map(v => {
         const newVar = { ...v };
+        // Remove `sort` key
         delete newVar.sort;
+        // Ensure description contains no raw newlines (replace with single space)
+        if (typeof newVar.description === 'string') {
+          newVar.description = newVar.description.replace(/\r?\n/g, ' ').replace(/\s+/g, ' ').trim();
+        }
+        // Ensure default_value is always a string for Pterodactyl
+        newVar.default_value = String(newVar.default_value ?? '');
+        // Convert rules array to pipe separated string
         newVar.rules = Array.isArray(v.rules) ? v.rules.join('|') : v.rules;
         newVar.field_type = "text"; // default to "text" since it's always present in Pterodactyl
         return newVar;
