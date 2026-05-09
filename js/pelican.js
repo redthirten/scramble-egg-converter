@@ -12,11 +12,11 @@
  * @param {Object} pteroObj - Source Pterodactyl Egg in object form
  * @param {string} [providedUUID] - Optional UUID to set on the Pelican Egg
  * @param {string} [providedUpdateURL] - Optional update URL to include in meta
- * @param {string} [providedImageBase64] - Optional Base64 image string
+ * @param {string} [providedIconBase64] - Optional Base64 icon string
  * @param {string[]} [providedTags] - Optional array of tags
  * @returns {Object} Pelican-formatted Egg in object form
  */
-export function convertToPelican(pteroObj, providedUUID, providedUpdateURL, providedImageBase64, providedTags) {
+export function convertToPelican(pteroObj, providedUUID, providedUpdateURL, providedIconBase64, providedTags) {
   const pelican = structuredClone(pteroObj);
 
   // Set standard Pelican comment
@@ -26,7 +26,7 @@ export function convertToPelican(pteroObj, providedUUID, providedUpdateURL, prov
   pelican.meta = pelican.meta || {};
   pelican.meta.version = "PLCN_v3";
   pelican.meta.update_url = providedUpdateURL || null;
-  pelican.image = providedImageBase64 || null;
+  pelican.icon = providedIconBase64 || null;
   pelican.tags = providedTags || [];
 
   // Generate UUID if not provided
@@ -73,7 +73,7 @@ export function convertToPelican(pteroObj, providedUUID, providedUpdateURL, prov
   ordered.author = pelican.author;
   ordered.uuid = pelican.uuid;
   ordered.description = pelican.description;
-  ordered.image = pelican.image;
+  ordered.icon = pelican.icon;
   ordered.tags = pelican.tags;
   ordered.features = pelican.features;
   ordered.docker_images = pelican.docker_images;
