@@ -78,9 +78,9 @@ export function convertToPterodactyl(pelicanObj) {
   }
 
   // Stringify JSON Config values
-  ptero.config.files = JSON.stringify(ptero.config.files, null, 4).replace(/\//g, '\\/');
-  ptero.config.startup = JSON.stringify(ptero.config.startup, null, 4).replace(/\//g, '\\/');
-  ptero.config.logs = JSON.stringify(ptero.config.logs, null, 4).replace(/\//g, '\\/');
+  ptero.config.files = JSON.stringify(ptero.config.files, null, 4);
+  ptero.config.startup = JSON.stringify(ptero.config.startup, null, 4);
+  ptero.config.logs = JSON.stringify(ptero.config.logs, null, 4);
 
   /*
   Config Files:
