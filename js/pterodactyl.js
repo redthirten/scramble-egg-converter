@@ -76,10 +76,14 @@ export function convertToPterodactyl(pelicanObj) {
     ptero.config.files = ptero.config.files.replace(/server\.allocations\.default/g, 'server.build.default');
   }
 
-  // Remove empty feature arrays
-  if (Array.isArray(ptero.features) && !ptero.features.length) {
-    ptero.features = null;
-  }
+  // Normalize empty-object values to arrays for keys that may be {}.
+  const normalizeEmptyObjectToArray = (val) => {
+    if (Array.isArray(val)) return val.slice();
+    if (val && typeof val === 'object' && Object.keys(val).length === 0) return [];
+    return [];
+  };
+  ptero.features = normalizeEmptyObjectToArray(ptero.features);
+  ptero.file_denylist = normalizeEmptyObjectToArray(ptero.file_denylist);
 
   // === Enforce key order for Pterodactyl ===
   const ordered = {};
