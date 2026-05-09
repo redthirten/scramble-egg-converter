@@ -14,6 +14,20 @@
  */
 export function convertToPterodactyl(pelicanObj) {
   const ptero = structuredClone(pelicanObj);
+  
+  /* === Define helper functions === */
+
+  // Normalize whitespace: remove raw newlines, collapse runs of whitespace, trim
+  const normalizeWhitespace = (s) => (typeof s === 'string' ? s.replace(/\r?\n/g, ' ').replace(/\s+/g, ' ').trim() : s);
+
+  // Normalize empty-object values to arrays for keys that may be {}.
+  const normalizeEmptyObjectToArray = (val) => {
+    if (Array.isArray(val)) return val.slice();
+    if (val && typeof val === 'object' && Object.keys(val).length === 0) return [];
+    return [];
+  };
+
+  /* === Conversion steps === */
 
   // Set standard Pterodactyl comment
   ptero._comment = "DO NOT EDIT: FILE GENERATED AUTOMATICALLY BY PTERODACTYL PANEL - PTERODACTYL.IO";
@@ -22,9 +36,14 @@ export function convertToPterodactyl(pelicanObj) {
   ptero.meta.version = "PTDL_v2";
   ptero.meta.update_url = null;
 
+  // Normalize top-level description to remove newlines and collapse whitespace
+  ptero.description = normalizeWhitespace(ptero.description);
+
+  // Delete unused keys
   delete ptero.uuid;
   delete ptero.tags;
-  delete ptero.image;
+  delete ptero.icon;
+  delete ptero.image; // Depreciated (now "icon"), but kept for backwards compatibility with older Eggs
 
   // Convert startup_commands object to string (first key only)
   if (ptero.startup_commands && typeof ptero.startup_commands === "object") {
@@ -35,21 +54,33 @@ export function convertToPterodactyl(pelicanObj) {
     delete ptero.startup_commands;
   }
 
-  // Convert variable rules array to string and remove sort
+  // Convert Startup Variables
   if (Array.isArray(ptero.variables)) {
-    ptero.variables = ptero.variables.map(v => {
-      const newVar = { ...v };
-      delete newVar.sort;
-      newVar.rules = Array.isArray(v.rules) ? v.rules.join('|') : v.rules;
-      newVar.field_type = "text"; // default to "text" since it's always present in Pterodactyl
-      return newVar;
-    });
+    ptero.variables = ptero.variables
+      // create a shallow copy so we don't mutate the input array
+      .slice()
+      // sort ascending by Pelican's `sort` property
+      .sort((a, b) => a.sort - b.sort)
+      // map to Pterodactyl variable format
+      .map(v => {
+        const newVar = { ...v };
+        // Remove `sort` key
+        delete newVar.sort;
+        // Normalize variable description whitespace/newlines
+        newVar.description = normalizeWhitespace(newVar.description);
+        // Ensure default_value is always a string for Pterodactyl
+        newVar.default_value = String(newVar.default_value ?? '');
+        // Convert rules array to pipe separated string
+        newVar.rules = Array.isArray(v.rules) ? v.rules.join('|') : v.rules;
+        newVar.field_type = "text"; // default to "text" since it's always present in Pterodactyl
+        return newVar;
+      });
   }
 
   // Stringify JSON Config values
-  ptero.config.files = JSON.stringify(ptero.config.files, null, 4).replace(/\//g, '\\/');
-  ptero.config.startup = JSON.stringify(ptero.config.startup, null, 4).replace(/\//g, '\\/');
-  ptero.config.logs = JSON.stringify(ptero.config.logs, null, 4).replace(/\//g, '\\/');
+  ptero.config.files = JSON.stringify(ptero.config.files, null, 4);
+  ptero.config.startup = JSON.stringify(ptero.config.startup, null, 4);
+  ptero.config.logs = JSON.stringify(ptero.config.logs, null, 4);
 
   /*
   Config Files:
@@ -61,10 +92,9 @@ export function convertToPterodactyl(pelicanObj) {
     ptero.config.files = ptero.config.files.replace(/server\.allocations\.default/g, 'server.build.default');
   }
 
-  // Remove empty feature arrays
-  if (Array.isArray(ptero.features) && !ptero.features.length) {
-    ptero.features = null;
-  }
+  // Handle keys that should be arrays when empty
+  ptero.features = normalizeEmptyObjectToArray(ptero.features);
+  ptero.file_denylist = normalizeEmptyObjectToArray(ptero.file_denylist);
 
   // === Enforce key order for Pterodactyl ===
   const ordered = {};

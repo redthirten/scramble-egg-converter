@@ -27,7 +27,7 @@ const downloadButton = document.getElementById('download');
 const metadataContainer = document.getElementById('add-metadata');
 const uuidInput = document.getElementById('uuid-input');
 const updateUrlInput = document.getElementById('update-url-input');
-const imageBase64Input = document.getElementById('image-base64-input');
+const iconBase64Input = document.getElementById('icon-base64-input');
 const tagsInput = document.getElementById('tags-input');
 const tagsList = document.getElementById('tags-list');
 let tags = [];
@@ -172,12 +172,12 @@ document.getElementById('download').addEventListener('click', () => {
     }
     const uuid = uuidInput.value.trim();
     const updateUrl = updateUrlInput.value.trim().replace(/\\\//g, '/'); // Extra sanitization for a JSON encoded URL string which may be inputted
-    const imageBase64 = imageBase64Input.value.trim();
+    const iconBase64 = iconBase64Input.value.trim();
     transformed = convertToPelican(
       originalObj,
       uuid,
       updateUrl,
-      imageBase64,
+      iconBase64,
       tags
     );
     outData = jsyaml.dump(transformed, { noRefs: true, lineWidth: -1 });
