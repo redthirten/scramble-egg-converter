@@ -1,6 +1,6 @@
 {
   "name": "scramble-egg-converter",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Scramble is an Egg converter for the Pelican and Pterodactyl game server panels.",
   "author": "David Wolfe (Red-Thirten)",
   "contributors": [
