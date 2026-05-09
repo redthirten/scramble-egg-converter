@@ -14,6 +14,20 @@
  */
 export function convertToPterodactyl(pelicanObj) {
   const ptero = structuredClone(pelicanObj);
+  
+  /* === Define helper functions === */
+
+  // Normalize whitespace: remove raw newlines, collapse runs of whitespace, trim
+  const normalizeWhitespace = (s) => (typeof s === 'string' ? s.replace(/\r?\n/g, ' ').replace(/\s+/g, ' ').trim() : s);
+
+  // Normalize empty-object values to arrays for keys that may be {}.
+  const normalizeEmptyObjectToArray = (val) => {
+    if (Array.isArray(val)) return val.slice();
+    if (val && typeof val === 'object' && Object.keys(val).length === 0) return [];
+    return [];
+  };
+
+  /* === Conversion steps === */
 
   // Set standard Pterodactyl comment
   ptero._comment = "DO NOT EDIT: FILE GENERATED AUTOMATICALLY BY PTERODACTYL PANEL - PTERODACTYL.IO";
@@ -22,6 +36,10 @@ export function convertToPterodactyl(pelicanObj) {
   ptero.meta.version = "PTDL_v2";
   ptero.meta.update_url = null;
 
+  // Normalize top-level description to remove newlines and collapse whitespace
+  ptero.description = normalizeWhitespace(ptero.description);
+
+  // Delete unused keys
   delete ptero.uuid;
   delete ptero.tags;
   delete ptero.icon;
@@ -48,10 +66,8 @@ export function convertToPterodactyl(pelicanObj) {
         const newVar = { ...v };
         // Remove `sort` key
         delete newVar.sort;
-        // Ensure description contains no raw newlines (replace with single space)
-        if (typeof newVar.description === 'string') {
-          newVar.description = newVar.description.replace(/\r?\n/g, ' ').replace(/\s+/g, ' ').trim();
-        }
+        // Normalize variable description whitespace/newlines
+        newVar.description = normalizeWhitespace(newVar.description);
         // Ensure default_value is always a string for Pterodactyl
         newVar.default_value = String(newVar.default_value ?? '');
         // Convert rules array to pipe separated string
@@ -76,12 +92,7 @@ export function convertToPterodactyl(pelicanObj) {
     ptero.config.files = ptero.config.files.replace(/server\.allocations\.default/g, 'server.build.default');
   }
 
-  // Normalize empty-object values to arrays for keys that may be {}.
-  const normalizeEmptyObjectToArray = (val) => {
-    if (Array.isArray(val)) return val.slice();
-    if (val && typeof val === 'object' && Object.keys(val).length === 0) return [];
-    return [];
-  };
+  // Handle keys that should be arrays when empty
   ptero.features = normalizeEmptyObjectToArray(ptero.features);
   ptero.file_denylist = normalizeEmptyObjectToArray(ptero.file_denylist);
 
