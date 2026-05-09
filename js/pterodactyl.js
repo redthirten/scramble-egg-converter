@@ -35,15 +35,21 @@ export function convertToPterodactyl(pelicanObj) {
     delete ptero.startup_commands;
   }
 
-  // Convert variable rules array to string and remove sort
+  // Convert Startup Variables
   if (Array.isArray(ptero.variables)) {
-    ptero.variables = ptero.variables.map(v => {
-      const newVar = { ...v };
-      delete newVar.sort;
-      newVar.rules = Array.isArray(v.rules) ? v.rules.join('|') : v.rules;
-      newVar.field_type = "text"; // default to "text" since it's always present in Pterodactyl
-      return newVar;
-    });
+    ptero.variables = ptero.variables
+      // create a shallow copy so we don't mutate the input array
+      .slice()
+      // sort ascending by Pelican's `sort` property
+      .sort((a, b) => a.sort - b.sort)
+      // map to Pterodactyl variable format and remove `sort`
+      .map(v => {
+        const newVar = { ...v };
+        delete newVar.sort;
+        newVar.rules = Array.isArray(v.rules) ? v.rules.join('|') : v.rules;
+        newVar.field_type = "text"; // default to "text" since it's always present in Pterodactyl
+        return newVar;
+      });
   }
 
   // Stringify JSON Config values
